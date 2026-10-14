@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101827">
+  <title>Mission: March 3, 2027</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: rgba(21, 32, 52, .78);
+      --text: #f4f7fb;
+      --muted: #a8b5ca;
+      --accent: #8de0c0;
+      --accent2: #a8b7ff;
+      --line: rgba(255,255,255,.11);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(ellipse at 15% 0%, rgba(95,122,255,.20), transparent 42%),
+        radial-gradient(ellipse at 100% 30%, rgba(80,220,173,.12), transparent 35%),
+        var(--bg);
+      display: flex; justify-content: center; padding: 24px 15px 36px;
+    }
+    .wrap { width: 100%; max-width: 760px; position: relative; z-index: 1; }
+    .ambient { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+    .orb { position: absolute; width: 220px; height: 220px; border-radius: 50%; filter: blur(70px); opacity: .16; animation: drift 12s ease-in-out infinite alternate; }
+    .orb.one { background: #7b8dff; top: 10%; left: -80px; }
+    .orb.two { background: #70e2bb; bottom: 5%; right: -90px; animation-delay: -4s; }
+    @keyframes drift { from { transform: translate3d(0,0,0) scale(.9); } to { transform: translate3d(28px,-20px,0) scale(1.12); } }
+    .music-row { display:flex; justify-content:center; margin-top:16px; }
+    .music-btn { border:1px solid var(--line); background:rgba(255,255,255,.06); color:var(--text); border-radius:999px; padding:10px 15px; font:inherit; font-size:.85rem; cursor:pointer; }
+    .music-btn:hover { background:rgba(255,255,255,.1); }
+    .music-note { color:var(--muted); font-size:.75rem; text-align:center; margin-top:8px; }
+    .top { display:flex; justify-content:space-between; align-items:center; gap:12px; margin: 5px 0 34px; }
+    .brand { font-size: .84rem; font-weight: 800; letter-spacing: .16em; color: var(--accent); }
+    .badge { border:1px solid var(--line); border-radius:999px; padding:8px 12px; color:var(--muted); font-size:.75rem; }
+    .hero { text-align:center; margin-bottom:24px; }
+    .eyebrow { color:var(--accent2); font-size:.78rem; font-weight:800; letter-spacing:.2em; text-transform:uppercase; }
+    h1 { font-size:clamp(2.1rem, 8vw, 4.1rem); line-height:1.04; letter-spacing:-.055em; margin:13px 0 12px; }
+    .subtitle { color:var(--muted); line-height:1.65; max-width:480px; margin:0 auto; font-size:1rem; }
+    .count-card { background:var(--panel); border:1px solid var(--line); border-radius:26px; padding:24px 18px; box-shadow:0 20px 60px rgba(0,0,0,.22); backdrop-filter:blur(16px); }
+    .count-label { text-align:center; color:var(--muted); font-size:.82rem; letter-spacing:.12em; text-transform:uppercase; }
+    .days { text-align:center; font-size:clamp(4.5rem, 18vw, 7.4rem); font-weight:850; letter-spacing:-.08em; line-height:1.08; margin:12px 0 3px; background:linear-gradient(110deg,#fff,var(--accent)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .days-caption { text-align:center; font-weight:700; font-size:1rem; }
+    .date { text-align:center; color:var(--muted); margin-top:10px; font-size:.9rem; }
+    .progress-area { margin-top:25px; }
+    .progress-top { display:flex; justify-content:space-between; color:var(--muted); font-size:.82rem; margin-bottom:9px; gap:10px; }
+    .track { height:8px; background:rgba(255,255,255,.09); border-radius:99px; overflow:hidden; }
+    .fill { height:100%; width:0%; background:linear-gradient(90deg,var(--accent2),var(--accent)); border-radius:99px; transition:width .5s ease; }
+    .quote-card { margin-top:18px; border:1px solid var(--line); border-radius:24px; padding:23px; background:rgba(255,255,255,.035); }
+    .quote-head { display:flex; align-items:center; gap:9px; color:var(--accent); font-size:.78rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+    .quote { font-size:clamp(1.18rem, 4vw, 1.55rem); line-height:1.5; font-weight:650; margin:18px 0 10px; letter-spacing:-.02em; }
+    .quote-note { color:var(--muted); font-size:.85rem; line-height:1.5; }
+    .planner { margin-top:14px; border:1px solid var(--line); border-radius:22px; padding:20px; background:rgba(255,255,255,.03); }
+    .planner h2 { font-size:1.1rem; margin:0 0 6px; }
+    .planner-sub { color:var(--muted); font-size:.82rem; margin-bottom:14px; line-height:1.5; }
+    .task { display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid var(--line); color:var(--text); font-size:.92rem; }
+    .task:last-of-type { border-bottom:0; }
+    .task input { width:18px; height:18px; accent-color:var(--accent); flex-shrink:0; }
+    .task input:checked + span { color:var(--muted); text-decoration:line-through; }
+    .reset-btn { margin-top:12px; border:1px solid var(--line); background:transparent; color:var(--muted); border-radius:999px; padding:8px 12px; cursor:pointer; }
+    .bottom-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
+    .mini { border:1px solid var(--line); border-radius:18px; padding:17px; background:rgba(255,255,255,.025); }
+    .mini .label { color:var(--muted); font-size:.78rem; margin-bottom:8px; }
+    .mini .value { font-size:1.08rem; font-weight:800; }
+    .tip { margin:22px 3px 0; color:var(--muted); text-align:center; font-size:.83rem; line-height:1.7; }
+    .footer { margin-top:27px; text-align:center; color:#77859b; font-size:.75rem; }
+    @media (max-width:430px) { .top { margin-bottom:28px; } .count-card { padding:22px 14px; } .quote-card { padding:19px; } }
+    @media (prefers-reduced-motion: reduce) { * { transition:none !important; animation:none !important; } }
+  </style>
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"><div class="orb one"></div><div class="orb two"></div></div>
+  <main class="wrap">
+    <header class="top">
+      <div class="brand">✦ STUDY MODE</div>
+      <div class="badge">Your goal. Your future.</div>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow">One day at a time</div>
+      <h1>Mission<br>March 02, 2027</h1>
+      <p class="subtitle">Your public exam is on March 3, 2027. Count down to March 2, prepare steadily, and make each day count.</p>
+    </section>
+
+    <section class="count-card" aria-live="polite">
+      <div class="count-label">Days until your final preparation day</div>
+      <div class="days" id="days">—</div>
+      <div class="days-caption" id="caption">days to go</div>
+      <div class="date">Tuesday · 2 March 2027 · Final preparation day</div>
+      <div class="progress-area">
+        <div class="progress-top"><span>Your countdown journey</span><span id="percent">—</span></div>
+        <div class="track"><div class="fill" id="fill"></div></div>
+      </div>
+    </section>
+
+    <section class="quote-card">
+      <div class="quote-head">✧ Today's motivation <span id="quoteDay"></span></div>
+      <div class="quote" id="quote">Small progress is still progress. Keep showing up.</div>
+      <div class="quote-note">Read it. Believe it. Then do one small thing for your future self.</div>
+    </section>
+
+    <section class="planner">
+      <h2>📚 Today's Study Planner</h2>
+      <div class="planner-sub">Choose a few realistic tasks. Your checkmarks are saved in this browser for today.</div>
+      <label class="task"><input type="checkbox" data-task="revise"><span>Revise one topic</span></label>
+      <label class="task"><input type="checkbox" data-task="practice"><span>Practise questions or a past-paper section</span></label>
+      <label class="task"><input type="checkbox" data-task="doubts"><span>Clear one doubt or review mistakes</span></label>
+      <label class="task"><input type="checkbox" data-task="review"><span>Quick recap, then take a proper break</span></label>
+      <button class="reset-btn" id="resetTasks" type="button">Reset today's tasks</button>
+    </section>
+
+    <div class="bottom-grid">
+      <div class="mini"><div class="label">📚 Today's mission</div><div class="value">Study a little better</div></div>
+      <div class="mini"><div class="label">🌱 Remember</div><div class="value">Consistency beats cramming</div></div>
+    </div>
+
+    <div class="music-row">
+      <button class="music-btn" id="musicBtn" type="button" aria-pressed="false">♫ Play calm background music</button>
+    </div>
+    <div class="music-note">Music starts only when you press play. You can pause it anytime.</div>
+    <div class="music-note">This creates a soft ambient tone in your browser; no music file is required.</div>
+
+    <p class="tip">You don't have to finish everything today.<br>Just take the next step. 💚</p>
+    <footer class="footer">Made for your March 2027 goal · Quotes change daily</footer>
+  </main>
+
+  <script>
+    // Exam date is local time. Change this date if your exam schedule changes.
+    const examDate = new Date(2027, 2, 2, 0, 0, 0); // Final preparation day: March 2, 2027
+    const startDate = new Date(2026, 9, 14, 0, 0, 0); // Countdown journey starts October 14, 2026
+
+    const quotes = [
+      "You don't need to feel ready. You need to begin.",
+      "Small steps every day create results you once thought were impossible.",
+      "Your future self will thank you for what you do today.",
+      "Focus on progress, not perfection.",
+      "One focused hour is better than a whole day of distractions.",
+      "You are building confidence every time you keep a promise to yourself.",
+      "Difficult chapters become easier when you face them one page at a time.",
+      "Don't compare your chapter one with someone else's chapter twenty.",
+      "A little revision today can make tomorrow less stressful.",
+      "Your effort matters, even when progress feels slow.",
+      "You can do hard things one step at a time.",
+      "The goal is not to study all day. The goal is to study with purpose.",
+      "Every question you practise is a chance to learn something new.",
+      "Mistakes are feedback. Use them to grow.",
+      "Start where you are. Use what you have. Do what you can.",
+      "Discipline is choosing what you want most over what you want now.",
+      "You have come too far to stop believing in yourself.",
+      "Take a break when you need one, then return with a clear mind.",
+      "Your only competition is who you were yesterday.",
+      "Make today's effort something you can be proud of tonight.",
+      "Big dreams are reached through ordinary daily habits.",
+      "You don't have to be the fastest. Keep moving forward.",
+      "Believe in the work you put in when nobody is watching.",
+      "A chapter a day can turn into a syllabus completed.",
+      "Don't let one bad study session define your ability.",
+      "Your pace is valid. Keep going.",
+      "The best time to start is now, not when you feel motivated.",
+      "Be patient with yourself, but stay committed to your goal.",
+      "Every revision makes knowledge easier to recall.",
+      "You are capable of learning more than you think.",
+      "Turn worry into one useful action.",
+      "Consistency makes difficult things feel familiar.",
+      "Keep your goal in sight and your next step simple.",
+      "You can reset your day at any moment.",
+      "Study for the opportunities you want to create.",
+      "One page, one problem, one step at a time.",
+      "Rest is part of preparation, not a reward you must earn.",
+      "Your marks matter, but they do not define your worth.",
+      "Ask questions. Clear doubts. Give yourself a fair chance.",
+      "Keep going: your effort is adding up.",
+      "A calm mind learns better. Breathe, then begin.",
+      "Do what you can today; let tomorrow handle tomorrow.",
+      "Your dream deserves your steady effort.",
+      "Hard work becomes powerful when it has a plan.",
+      "You are allowed to learn slowly and still succeed.",
+      "Progress is often quiet before it becomes visible.",
+      "Choose one distraction to put away and one task to finish.",
+      "You don't need a perfect day to make meaningful progress.",
+      "Every solved problem is proof that practice helps.",
+      "Keep faith in yourself and keep working.",
+      "You are preparing for more than an exam: you are building habits.",
+      "The next 25 minutes can make a difference. Begin.",
+      "Your best effort today is enough to build on tomorrow.",
+      "Don't fear the whole syllabus. Focus on the next topic.",
+      "The work you do now is an investment in your future.",
+      "A fresh start can happen after any difficult moment.",
+      "Be proud of the discipline nobody else sees.",
+      "Confidence grows when preparation meets opportunity.",
+      "You can improve with practice, feedback, and patience.",
+      "Keep your notes clear and your goals realistic.",
+      "A short, focused review is better than putting it off.",
+      "You are not behind in life. Keep working at your own pace.",
+      "Make a plan, start small, and adjust as you learn.",
+      "Every day is another opportunity to get a little stronger.",
+      "You don't need motivation every minute; build a routine.",
+      "Let your actions speak louder than your doubts.",
+      "Doubt gets smaller when you take the first step.",
+      "The syllabus is a series of small tasks, not one giant wall.",
+      "Protect your sleep. Your brain needs rest to learn.",
+      "You have permission to start again and do better.",
+      "Today's revision is tomorrow's confidence.",
+      "Stay curious. Understanding lasts longer than memorising alone.",
+      "A focused mind can make even a short session count.",
+      "Keep showing up, especially on the ordinary days.",
+      "You are learning, not failing, when something takes time.",
+      "Take pride in trying, improving, and trying again.",
+      "One good decision can restart your momentum.",
+      "Don't wait for a perfect mood. Make a simple start.",
+      "Your goal is closer every time you put in honest effort.",
+      "A question you get wrong today can become one you get right tomorrow.",
+      "Make time for practice, revision, and rest.",
+      "Small wins are still wins. Notice them.",
+      "You can feel nervous and still be well prepared.",
+      "Focus on what you can control: your effort and your next choice.",
+      "A steady routine can carry you on low-motivation days.",
+      "Give yourself the same patience you'd give a friend.",
+      "Your hard work is meaningful, even before the results arrive.",
+      "Keep the phone away for one session and give your goal your attention.",
+      "You don't need to know everything right now. Keep learning.",
+      "The path gets clearer when you take the next step.",
+      "Let every study session make the next one easier to begin.",
+      "Your future is shaped by small choices repeated over time.",
+      "Keep going at a pace you can sustain.",
+      "Review, practise, rest, repeat. You've got a plan.",
+      "Be brave enough to begin and patient enough to continue.",
+      "You can make today useful without making it perfect.",
+      "Trust your preparation and keep improving it.",
+      "When a topic feels tough, break it into smaller pieces.",
+      "A few pages today are better than zero pages while waiting for motivation.",
+      "Stay hopeful, stay organised, and take the next step.",
+      "You are more than one exam. Do your best and take care of yourself.",
+      "Keep your eyes on the goal, but celebrate the progress.",
+      "March 2 is your final preparation day. Your public exam is March 3—keep steady and take care of yourself.",
+      "Prepare with patience. Every focused session is a step forward.",
+      "You can turn a confusing topic into a clear one by asking for help.",
+      "Start with the subject that needs your attention most, then keep it manageable.",
+      "A realistic plan you follow is better than a perfect plan you avoid.",
+      "Learning takes time. Give yourself room to understand.",
+      "Today is another chance to practise what you learned yesterday.",
+      "Put your energy into the next useful step, not into worrying about every step.",
+      "Make your study space ready, then begin with one small task.",
+      "Your effort is valuable even when nobody else can see it.",
+      "A calm revision session can help more than a late-night panic.",
+      "Keep your goals clear and your daily tasks small.",
+      "Every doubt cleared today makes the next revision easier.",
+      "Take a breath, choose a topic, and start.",
+      "You can make progress without doing everything at once.",
+      "A practice test is a tool for learning, not a judgement of your worth.",
+      "Be consistent, but be kind to yourself along the way.",
+      "Use your mistakes as a map for what to revise next.",
+      "Your job today is to learn the next thing, not to know everything.",
+      "Give your attention to one task at a time.",
+      "Good preparation includes food, water, sleep, and breaks.",
+      "You are building skills every time you try again.",
+      "The next page is a fresh opportunity.",
+      "Make revision active: recall, practise, check, and improve.",
+      "Keep going gently. Steady effort adds up.",
+      "You can feel pressure and still take a helpful next step.",
+      "Focus on understanding first; speed can grow with practice.",
+      "A small plan can turn a big goal into doable actions.",
+      "Celebrate finishing a task, then move to the next one.",
+      "The work you do today can make exam day feel more familiar.",
+      "Give yourself credit for showing up and trying.",
+      "Choose progress you can repeat tomorrow.",
+      "A little more clarity today is a meaningful win.",
+      "You do not need to be perfect to be prepared.",
+      "Keep your breaks intentional and return when they end.",
+      "Ask for support when a topic feels difficult; learning is not a solo race.",
+      "Protect your confidence by noticing what you have already learned.",
+      "Your best routine is one that supports both study and wellbeing.",
+      "Take the day one task at a time. You are moving forward.",
+      "March 2 is the checkpoint; keep preparing steadily for March 3."
+    ];
+
+    function dayNumber(date) {
+      const a = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const b = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+      return Math.max(1, Math.floor((a - b) / 86400000) + 1);
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const remaining = Math.ceil((examDate - today) / 86400000);
+      const daysEl = document.getElementById("days");
+      const captionEl = document.getElementById("caption");
+
+      if (remaining > 0) {
+        daysEl.textContent = remaining;
+        captionEl.textContent = remaining === 1 ? "day to go" : "days to go";
+      } else if (remaining === 0) {
+        daysEl.textContent = "0";
+        captionEl.textContent = "Final preparation day. Keep calm and review gently.";
+      } else {
+        daysEl.textContent = "🎉";
+        captionEl.textContent = "Your final preparation day has passed. Your exam is March 3.";
+      }
+
+      const total = Math.ceil((examDate - startDate) / 86400000);
+      const elapsed = Math.max(0, Math.floor((today - startDate) / 86400000));
+      const progress = Math.max(0, Math.min(100, (elapsed / total) * 100));
+      document.getElementById("fill").style.width = progress + "%";
+      document.getElementById("percent").textContent = Math.round(progress) + "%";
+    }
+
+    function updateQuote() {
+      const n = dayNumber(new Date());
+      const index = (n - 1) % quotes.length;
+      document.getElementById("quote").textContent = "“" + quotes[index] + "”";
+      document.getElementById("quoteDay").textContent = "· DAY " + n;
+    }
+
+    let audioContext = null;
+    let oscillator = null;
+    let gainNode = null;
+    const musicBtn = document.getElementById("musicBtn");
+    musicBtn.addEventListener("click", async () => {
+      if (!audioContext || audioContext.state === "closed") {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) {
+          musicBtn.textContent = "Ambient sound isn't supported in this browser";
+          return;
+        }
+        audioContext = new AudioCtx();
+        oscillator = audioContext.createOscillator();
+        gainNode = audioContext.createGain();
+        oscillator.type = "sine";
+        oscillator.frequency.value = 174;
+        gainNode.gain.value = 0.018;
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.start();
+        await audioContext.resume();
+        musicBtn.textContent = "Ⅱ Pause ambient sound";
+        musicBtn.setAttribute("aria-pressed", "true");
+      } else if (audioContext.state === "running") {
+        await audioContext.suspend();
+        musicBtn.textContent = "♫ Play calm ambient sound";
+        musicBtn.setAttribute("aria-pressed", "false");
+      } else {
+        await audioContext.resume();
+        musicBtn.textContent = "Ⅱ Pause ambient sound";
+        musicBtn.setAttribute("aria-pressed", "true");
+      }
+    });
+
+    // Save daily planner checkmarks in local storage, reset automatically each new date.
+    const todayKey = new Date().toLocaleDateString("en-CA");
+    const plannerKey = "examPlanner-" + todayKey;
+    document.querySelectorAll("[data-task]").forEach((box) => {
+      box.checked = localStorage.getItem(plannerKey + "-" + box.dataset.task) === "true";
+      box.addEventListener("change", () => {
+        localStorage.setItem(plannerKey + "-" + box.dataset.task, String(box.checked));
+      });
+    });
+    document.getElementById("resetTasks").addEventListener("click", () => {
+      document.querySelectorAll("[data-task]").forEach((box) => {
+        box.checked = false;
+        localStorage.removeItem(plannerKey + "-" + box.dataset.task);
+      });
+    });
+
+    updateCountdown();
+    updateQuote();
+    setInterval(updateCountdown, 60000);
+  </script>
+</body>
+</html>
